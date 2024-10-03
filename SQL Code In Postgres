@@ -1,0 +1,57 @@
+
+--select * from grouped_data;
+
+
+/*alterting data in main database*/
+-- we did this because the data we got from csv is in text format
+alter table grouped_data add column movie_release_date DATE;
+
+update grouped_data set movie_release_date=TO_DATE(release_date,'DD/MM/YYYY')
+
+alter table grouped_data drop column release_date;
+
+select * from grouped_data;
+
+
+
+--create table for new data where only top 20 english movies will be saved based on votes
+drop table if exists filter_data;
+CREATE TABLE IF NOT EXISTS filter_data (
+    id INT PRIMARY KEY,
+    title VARCHAR(255),
+    original_language VARCHAR(50), votes decimal(10,8));
+
+INSERT INTO filter_data (id, title, original_language,votes)
+SELECT id, title, original_language,vote_average
+FROM grouped_data
+WHERE original_language = 'en' order by vote_average desc
+LIMIT 20;
+
+select * from filter_data;
+
+--for release date where only movies after 2000 year release will be saved __> query
+
+
+drop table if exists after_2000;
+create table if not exists after_2000(ids INT primary key , title varchar(100), release_dates DATE ,votes decimal(10,4));
+
+INSERT INTO after_2000(ids, title, release_dates, votes)
+SELECT DISTINCT id, title, movie_release_date, vote_average
+FROM grouped_data limit 200;
+
+
+--show the table
+
+select * from after_2000 where release_dates>'2000-01-01' order by release_dates asc;
+
+
+/* not needed anymore
+
+alter table after_2000 add column after_2000 DATE;
+
+update after_2000 set after_2000=TO_DATE(release_dates,'DD/MM/YYYY')
+
+alter table after_2000 drop column release_dates;
+
+*/
+
