@@ -1,17 +1,15 @@
-import pandas as pd
-def fetch():
-        
-    new=pd.read_csv('new.csv')
-    new.dropna()    
-    return new
+import pyspark
+from pyspark.sql import SparkSession
+from pyspark import SparkConf, SparkContext
+import requests
+import json
 
-fetch()
+conf = SparkConf()
+conf.set("spark.pyspark.python", "python")  # Use "python" instead of "python3"
+sc = SparkContext(conf=conf)
 
-# print(new)
 
-# print(type(new))
-# print(new.head())
-# print(new['Genres'])
-
-# new.to_csv('transformed.csv',header=True)
-# print(len(new))
+spark = SparkSession.builder \
+    .master("local[*]") \
+    .appName("MyApp") \
+    .getOrCreate()
